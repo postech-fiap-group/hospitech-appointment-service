@@ -1,4 +1,4 @@
-package dev.call.hospitech_appointment_service;
+package dev.call.appointment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

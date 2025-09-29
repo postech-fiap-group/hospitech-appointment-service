@@ -1,4 +1,4 @@
-package dev.call.hospitech_appointment_service;
+package dev.call.appointment;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

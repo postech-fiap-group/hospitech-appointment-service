@@ -6,33 +6,40 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      postgresql:
+      mysql:
         condition: service_healthy
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresql:5432/hospitech
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=postgres
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_URL_FLYWAY: jdbc:mysql://mysql:3306/hospitech
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: password
     networks:
-      - springboot-postgres-network
-  postgresql:
-    image: postgres:15-alpine
-    ports:
-      - "5432:5432"
+      - app-network
+  mysql:
+    image: mysql:8.4.0
+    container_name: mysql
     environment:
-      - POSTGRES_DB=hospitech
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      MYSQL_DATABASE: hospitech
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_TCP_PORT: 3306
+    ports:
+      - "3306:3306"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
+      - mysql_data:/var/lib/mysql
     networks:
-      - springboot-postgres-network
+      - app-network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      retries: 10
-      interval: 10s
-      timeout: 5s
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 5s
+      timeout: 10s
+      retries: 5
+    restart: always
+
 volumes:
-  postgres-data:
+  mysql_data:
+
 networks:
-  springboot-postgres-network:
-    name: fiap-network
+  app-network:
+    driver: bridge
