@@ -1,4 +1,7 @@
-package dev.call.appointment.domain.usuario;
+package dev.call.appointment.domain.usuario.dto;
+
+import dev.call.appointment.domain.usuario.TipoUsuario;
+import dev.call.appointment.domain.usuario.Usuario;
 
 public record UsuarioDetailsDto(
         Long id,

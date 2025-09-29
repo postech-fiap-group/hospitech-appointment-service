@@ -1,9 +1,9 @@
 package dev.call.appointment.service;
 
 import dev.call.appointment.domain.usuario.Usuario;
-import dev.call.appointment.domain.usuario.UsuarioCreateDto;
-import dev.call.appointment.domain.usuario.UsuarioDetailsDto;
-import dev.call.appointment.domain.usuario.UsuarioLoginDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioCreateDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioDetailsDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioLoginDto;
 import dev.call.appointment.exception.UsuarioCamposInvalidosException;
 import dev.call.appointment.infra.security.TokenService;
 import dev.call.appointment.repository.UsuarioRepository;

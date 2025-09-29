@@ -1,4 +1,4 @@
-package dev.call.appointment.domain.usuario;
+package dev.call.appointment.domain.usuario.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

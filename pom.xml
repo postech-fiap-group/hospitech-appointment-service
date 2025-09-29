@@ -8,10 +8,10 @@
 	<version>3.5.6</version>
 	<relativePath/> <!-- lookup parent from repository -->
 </parent>
-<groupId>com.example</groupId>
-<artifactId>demo</artifactId>
+<groupId>dev.call</groupId>
+<artifactId>hospitech-appointment-service</artifactId>
 <version>0.0.1-SNAPSHOT</version>
-<name>demo</name>
+<name>hospitech-appointment-service</name>
 <description>Demo project for Spring Boot</description>
 <url/>
 <licenses>

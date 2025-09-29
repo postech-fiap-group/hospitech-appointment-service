@@ -1,8 +1,8 @@
 package dev.call.appointment.controller;
 
-import dev.call.appointment.domain.usuario.UsuarioCreateDto;
-import dev.call.appointment.domain.usuario.UsuarioDetailsDto;
-import dev.call.appointment.domain.usuario.UsuarioLoginDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioCreateDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioDetailsDto;
+import dev.call.appointment.domain.usuario.dto.UsuarioLoginDto;
 import dev.call.appointment.infra.security.TokenJwtDto;
 import dev.call.appointment.service.UsuarioService;
 import jakarta.validation.Valid;
