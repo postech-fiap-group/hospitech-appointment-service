@@ -1,9 +1,9 @@
 package dev.call.appointment.domain.consulta;
 
+import dev.call.appointment.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 public class Consulta {
@@ -11,18 +11,25 @@ public class Consulta {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long pacienteId;
-    private Long medicoId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "paciente_id")
+    private Usuario pacienteId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "medico_id")
+    private Usuario medicoId;
     @Enumerated(EnumType.STRING)
-    private List<Especialidade> especialidade;
+    private Especialidade especialidade;
     private LocalDateTime dataHoraConsulta;
     private String observacoes;
 
     public Consulta() {
     }
 
-    public Consulta(Long id, Long pacienteId, Long medicoId, List<Especialidade> especialidade, LocalDateTime dataHoraConsulta, String observacoes) {
-        this.id = id;
+    public Consulta(Usuario pacienteId,
+                    Usuario medicoId,
+                    Especialidade especialidade,
+                    LocalDateTime dataHoraConsulta,
+                    String observacoes) {
         this.pacienteId = pacienteId;
         this.medicoId = medicoId;
         this.especialidade = especialidade;
@@ -38,27 +45,27 @@ public class Consulta {
         this.id = id;
     }
 
-    public Long getPacienteId() {
+    public Usuario getPacienteId() {
         return pacienteId;
     }
 
-    public void setPacienteId(Long pacienteId) {
+    public void setPacienteId(Usuario pacienteId) {
         this.pacienteId = pacienteId;
     }
 
-    public Long getMedicoId() {
+    public Usuario getMedicoId() {
         return medicoId;
     }
 
-    public void setMedicoId(Long medicoId) {
+    public void setMedicoId(Usuario medicoId) {
         this.medicoId = medicoId;
     }
 
-    public List<Especialidade> getEspecialidade() {
+    public Especialidade getEspecialidade() {
         return especialidade;
     }
 
-    public void setEspecialidade(List<Especialidade> especialidade) {
+    public void setEspecialidade(Especialidade especialidade) {
         this.especialidade = especialidade;
     }
 
