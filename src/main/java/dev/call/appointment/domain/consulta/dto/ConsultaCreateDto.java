@@ -1,6 +1,5 @@
 package dev.call.appointment.domain.consulta.dto;
 
-import dev.call.appointment.domain.consulta.Especialidade;
 import jakarta.validation.constraints.NotBlank;
 
 public record ConsultaCreateDto(

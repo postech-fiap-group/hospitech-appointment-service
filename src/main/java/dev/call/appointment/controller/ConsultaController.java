@@ -41,7 +41,7 @@ public class ConsultaController {
     @PutMapping({"{id}"})
     public ResponseEntity<ConsultaDto> update(@PathVariable("id") Long id, @Valid @RequestBody ConsultaCreateDto dto) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body(consultaService.update(dto));
+                .body(consultaService.update(id,dto));
     }
 
     @DeleteMapping({"{id}"})

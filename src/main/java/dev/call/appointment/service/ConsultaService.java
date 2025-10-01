@@ -22,8 +22,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.lang.Character.toUpperCase;
-
 @Service
 public class ConsultaService {
 
@@ -57,8 +55,18 @@ public class ConsultaService {
         return new ConsultaDto(consultaEncontrada);
     }
 
-    public ConsultaDto update(@Valid ConsultaCreateDto dto) {
-        return null;
+    public ConsultaDto update(Long id,ConsultaCreateDto dto) {
+        verificacaoDto(dto);
+        Consulta consultaEncontrada = consultaRepository.findById(id).orElseThrow(ConsultaNotFoundException::new);
+        Usuario medicoEncontrado = usuarioRepository.findById(dto.medicoId()).orElseThrow(MedicoInvalidosException::new);
+        Usuario pascienteEncontrado = usuarioRepository.findById(dto.pacienteId()).orElseThrow(PacienteInvalidosException::new);
+
+        consultaEncontrada.setMedicoId(medicoEncontrado);
+        consultaEncontrada.setPacienteId(pascienteEncontrado);
+        consultaEncontrada.setEspecialidade(Especialidade.valueOf(dto.especialidade()));
+        consultaEncontrada.setDataHoraConsulta(LocalDateTime.parse(dto.dataHora()));
+        consultaEncontrada.setObservacoes(dto.observacoes());
+        return new ConsultaDto(consultaRepository.save(consultaEncontrada));
     }
 
     private void verificacaoDto(Object dto) {
@@ -77,7 +85,7 @@ public class ConsultaService {
         return new Consulta(
                 medicoEncontrado,
                 pascienteEncontrado,
-                Especialidade.valueOf(dto.especialidade().toUpperCase()),
+                Especialidade.valueOf(dto.especialidade()),
                 LocalDateTime.parse(dto.dataHora()),
                 dto.observacoes()
         );
