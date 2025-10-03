@@ -33,7 +33,7 @@ public class Usuario implements UserDetails {
         this.nome = dto.nome();
         this.email = dto.email();
         this.senha = passEnconded;
-        this.tipo = TipoUsuario.PACIENTE;
+        this.tipo = dto.tipoUsuario();
     }
 
     public Long getId() {

@@ -1,5 +1,6 @@
 package dev.call.appointment.service;
 
+import dev.call.appointment.commands.NotificarCommand;
 import dev.call.appointment.domain.consulta.Consulta;
 import dev.call.appointment.domain.consulta.Especialidade;
 import dev.call.appointment.domain.consulta.dto.ConsultaCreateDto;
@@ -30,14 +31,17 @@ public class ConsultaService {
     private final Validator validator;
     private final UsuarioRepository usuarioRepository;
     private final RestClient.Builder builder;
+    private final NotificarService notificarService;
 
-    public ConsultaService(ConsultaRepository consultaRepository, TokenService tokenService, Validator validator, UsuarioRepository usuarioRepository, RestClient.Builder builder) {
+    public ConsultaService(ConsultaRepository consultaRepository, TokenService tokenService, Validator validator, UsuarioRepository usuarioRepository, RestClient.Builder builder,
+			NotificarService notificarService) {
         this.consultaRepository = consultaRepository;
         this.tokenService = tokenService;
         this.validator = validator;
         this.usuarioRepository = usuarioRepository;
         this.builder = builder;
-    }
+		this.notificarService = notificarService;
+	}
 
     public List<ConsultaDto> getAll() {
         List<Consulta> consultas = consultaRepository.findAll();
@@ -46,7 +50,18 @@ public class ConsultaService {
 
     public ConsultaDto save(@Valid ConsultaCreateDto dto) {
         verificacaoDto(dto);
+
+
         Consulta consultaSalva = consultaRepository.save(builderConsulta(dto));
+        Usuario medicoEncontrado = usuarioRepository.findById(dto.medicoId()).orElseThrow(MedicoInvalidosException::new);
+        Usuario pascienteEncontrado = usuarioRepository.findById(dto.pacienteId()).orElseThrow(PacienteInvalidosException::new);
+
+        notificarService.newNotitification(new NotificarCommand(
+                pascienteEncontrado.getNome(),
+                pascienteEncontrado.getEmail(),
+                consultaSalva.getEspecialidade().name(),
+                consultaSalva.getDataHoraConsulta().toLocalDate(),
+                medicoEncontrado.getNome()));
         return new ConsultaDto(consultaSalva);
     }
 
@@ -66,6 +81,14 @@ public class ConsultaService {
         consultaEncontrada.setEspecialidade(Especialidade.valueOf(dto.especialidade()));
         consultaEncontrada.setDataHoraConsulta(LocalDateTime.parse(dto.dataHora()));
         consultaEncontrada.setObservacoes(dto.observacoes());
+
+        notificarService.newNotitification(new NotificarCommand(
+                pascienteEncontrado.getNome(),
+                pascienteEncontrado.getEmail(),
+                consultaEncontrada.getEspecialidade().name(),
+                consultaEncontrada.getDataHoraConsulta().toLocalDate(),
+                medicoEncontrado.getNome()));
+
         return new ConsultaDto(consultaRepository.save(consultaEncontrada));
     }
 
