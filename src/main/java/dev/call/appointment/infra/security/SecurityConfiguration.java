@@ -28,10 +28,23 @@ public class SecurityConfiguration {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
-                    // rotas públicas
+                    // Rotas públicas
                     req.requestMatchers(HttpMethod.POST, "/usuario/login", "/usuario").permitAll();
-                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "swagger-ui/**").permitAll();
-                    // qualquer outra rota precisa ser autenticada
+                    req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
+
+                    // Rotas de médico
+                    req.requestMatchers("/consulta/*/details", "/consulta/*/edit", "/consulta/*/delete")
+                            .hasAuthority("MEDICO");
+
+                    // Rotas de enfermeiro
+                    req.requestMatchers("/consulta", "/consulta/new")
+                            .hasAuthority("ENFERMEIRO");
+
+                    // Rotas de paciente
+                    req.requestMatchers("/consulta")
+                            .hasAuthority("PACIENTE");
+
+                    // Qualquer outra rota precisa de login
                     req.anyRequest().authenticated();
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)

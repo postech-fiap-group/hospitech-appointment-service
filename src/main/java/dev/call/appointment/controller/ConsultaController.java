@@ -27,24 +27,24 @@ public class ConsultaController {
         return ResponseEntity.status(HttpStatus.OK).body(consultaService.getAll());
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}/details")
     public ResponseEntity<ConsultaDto> findById(@PathVariable Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(consultaService.getById(id));
     }
 
-    @PostMapping
+    @GetMapping("/new")
     public ResponseEntity<ConsultaDto> save(@Valid @RequestBody ConsultaCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(consultaService.save(dto));
     }
 
-    @PutMapping({"{id}"})
+    @PutMapping({"{id}/edit"})
     public ResponseEntity<ConsultaDto> update(@PathVariable("id") Long id, @Valid @RequestBody ConsultaCreateDto dto) {
         return ResponseEntity.status(HttpStatus.NO_CONTENT)
                 .body(consultaService.update(id,dto));
     }
 
-    @DeleteMapping({"{id}"})
+    @DeleteMapping({"{id}/delete"})
     public ResponseEntity<ConsultaDto> delete(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
