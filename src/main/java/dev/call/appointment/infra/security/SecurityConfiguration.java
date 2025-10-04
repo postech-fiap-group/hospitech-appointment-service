@@ -1,5 +1,6 @@
 package dev.call.appointment.infra.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -46,6 +47,21 @@ public class SecurityConfiguration {
 
                     // Qualquer outra rota precisa de login
                     req.anyRequest().authenticated();
+                })
+                .exceptionHandling(exception -> {
+                    // usuário não autenticado (401)
+                    exception.authenticationEntryPoint((request, response, authException) -> {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"Usuario nao autenticado. Faça login.\"}");
+                    });
+
+                    // usuário autenticado mas sem permissão (403)
+                    exception.accessDeniedHandler((request, response, accessDeniedException) -> {
+                        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"error\": \"Acesso negado. Permissao insuficiente.\"}");
+                    });
                 })
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
