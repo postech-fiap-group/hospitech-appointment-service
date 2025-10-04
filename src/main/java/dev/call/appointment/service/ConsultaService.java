@@ -11,14 +11,12 @@ import dev.call.appointment.exception.ConsultaCamposInvalidosException;
 import dev.call.appointment.exception.ConsultaNotFoundException;
 import dev.call.appointment.exception.MedicoInvalidosException;
 import dev.call.appointment.exception.PacienteInvalidosException;
-import dev.call.appointment.infra.security.TokenService;
 import dev.call.appointment.repository.ConsultaRepository;
 import dev.call.appointment.repository.UsuarioRepository;
 import jakarta.validation.Valid;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Validator;
-import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -29,39 +27,29 @@ import java.util.stream.Collectors;
 public class ConsultaService {
 
     private final ConsultaRepository consultaRepository;
-    private final TokenService tokenService;
     private final Validator validator;
     private final UsuarioRepository usuarioRepository;
-    private final RestClient.Builder builder;
     private final NotificarService notificarService;
 
-    public ConsultaService(ConsultaRepository consultaRepository, TokenService tokenService, Validator validator, UsuarioRepository usuarioRepository, RestClient.Builder builder,
-			NotificarService notificarService) {
+    public ConsultaService(ConsultaRepository consultaRepository, Validator validator, UsuarioRepository usuarioRepository,
+                           NotificarService notificarService) {
         this.consultaRepository = consultaRepository;
-        this.tokenService = tokenService;
         this.validator = validator;
         this.usuarioRepository = usuarioRepository;
-        this.builder = builder;
-		this.notificarService = notificarService;
-	}
+        this.notificarService = notificarService;
+    }
 
     public List<ConsultaDto> getAll() {
         List<Consulta> consultas = consultaRepository.findAll();
-        return consultas.stream().map(consulta -> new ConsultaDto(consulta)).collect(Collectors.toList());
+        return consultas.stream().map(ConsultaDto::new).toList();
     }
 
     public ConsultaDto save(@Valid ConsultaCreateDto dto) {
         verificacaoDto(dto);
-        Usuario medicoEncontrado = usuarioRepository.findByIdAndTipo(dto.medicoId(),TipoUsuario.MEDICO ).orElseThrow(MedicoInvalidosException::new);
+        Usuario medicoEncontrado = usuarioRepository.findByIdAndTipo(dto.medicoId(), TipoUsuario.MEDICO).orElseThrow(MedicoInvalidosException::new);
         Usuario pascienteEncontrado = usuarioRepository.findByIdAndTipo(dto.pacienteId(), TipoUsuario.PACIENTE).orElseThrow(PacienteInvalidosException::new);
-        Consulta consultaSalva = consultaRepository.save(builderConsulta(dto, medicoEncontrado , pascienteEncontrado));
-
-        notificarService.newNotitification(new NotificarCommand(
-                pascienteEncontrado.getNome(),
-                pascienteEncontrado.getEmail(),
-                consultaSalva.getEspecialidade().name(),
-                consultaSalva.getDataHoraConsulta().toLocalDate(),
-                medicoEncontrado.getNome()));
+        Consulta consultaSalva = consultaRepository.save(builderNovaConsulta(dto, medicoEncontrado, pascienteEncontrado));
+        sendNotification(consultaSalva, medicoEncontrado, pascienteEncontrado);
         return new ConsultaDto(consultaSalva);
     }
 
@@ -70,26 +58,25 @@ public class ConsultaService {
         return new ConsultaDto(consultaEncontrada);
     }
 
-    public ConsultaDto update(Long id,ConsultaCreateDto dto) {
+    public ConsultaDto update(Long id, ConsultaCreateDto dto) {
         verificacaoDto(dto);
         Consulta consultaEncontrada = consultaRepository.findById(id).orElseThrow(ConsultaNotFoundException::new);
-        Usuario medicoEncontrado = usuarioRepository.findById(dto.medicoId()).orElseThrow(MedicoInvalidosException::new);
-        Usuario pascienteEncontrado = usuarioRepository.findById(dto.pacienteId()).orElseThrow(PacienteInvalidosException::new);
+        Usuario medicoEncontrado = usuarioRepository.findByIdAndTipo(dto.medicoId(), TipoUsuario.MEDICO).orElseThrow(MedicoInvalidosException::new);
+        Usuario pascienteEncontrado = usuarioRepository.findByIdAndTipo(dto.pacienteId(), TipoUsuario.PACIENTE).orElseThrow(PacienteInvalidosException::new);
 
+        builderAtualizaConsulta(consultaEncontrada, dto, medicoEncontrado, pascienteEncontrado);
+
+        sendNotification(consultaEncontrada, medicoEncontrado, pascienteEncontrado);
+
+        return new ConsultaDto(consultaRepository.save(consultaEncontrada));
+    }
+
+    private void builderAtualizaConsulta(Consulta consultaEncontrada, ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
         consultaEncontrada.setMedicoId(medicoEncontrado);
         consultaEncontrada.setPacienteId(pascienteEncontrado);
         consultaEncontrada.setEspecialidade(Especialidade.valueOf(dto.especialidade()));
         consultaEncontrada.setDataHoraConsulta(LocalDateTime.parse(dto.dataHora()));
         consultaEncontrada.setObservacoes(dto.observacoes());
-
-        notificarService.newNotitification(new NotificarCommand(
-                pascienteEncontrado.getNome(),
-                pascienteEncontrado.getEmail(),
-                consultaEncontrada.getEspecialidade().name(),
-                consultaEncontrada.getDataHoraConsulta().toLocalDate(),
-                medicoEncontrado.getNome()));
-
-        return new ConsultaDto(consultaRepository.save(consultaEncontrada));
     }
 
     private void verificacaoDto(Object dto) {
@@ -102,7 +89,7 @@ public class ConsultaService {
         }
     }
 
-    private Consulta builderConsulta(@Valid ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
+    private Consulta builderNovaConsulta(@Valid ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
         return new Consulta(
                 medicoEncontrado,
                 pascienteEncontrado,
@@ -110,6 +97,16 @@ public class ConsultaService {
                 LocalDateTime.parse(dto.dataHora(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 dto.observacoes()
         );
+    }
+
+    private void sendNotification(Consulta consulta, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
+        notificarService.newNotitification(new NotificarCommand(
+                pascienteEncontrado.getNome(),
+                pascienteEncontrado.getEmail(),
+                consulta.getEspecialidade().name(),
+                consulta.getDataHoraConsulta().toLocalDate(),
+                medicoEncontrado.getNome()));
+
     }
 
 }
