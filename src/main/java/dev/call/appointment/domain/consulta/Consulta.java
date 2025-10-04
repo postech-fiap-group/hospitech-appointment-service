@@ -1,12 +1,10 @@
 package dev.call.appointment.domain.consulta;
 
 import dev.call.appointment.domain.usuario.Usuario;
-import dev.call.appointment.repository.ConsultaUsuariosValidos;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@ConsultaUsuariosValidos
 @Entity
 public class Consulta {
 

@@ -5,6 +5,7 @@ import dev.call.appointment.domain.consulta.Consulta;
 import dev.call.appointment.domain.consulta.Especialidade;
 import dev.call.appointment.domain.consulta.dto.ConsultaCreateDto;
 import dev.call.appointment.domain.consulta.dto.ConsultaDto;
+import dev.call.appointment.domain.usuario.TipoUsuario;
 import dev.call.appointment.domain.usuario.Usuario;
 import dev.call.appointment.exception.ConsultaCamposInvalidosException;
 import dev.call.appointment.exception.ConsultaNotFoundException;
@@ -20,6 +21,7 @@ import org.springframework.validation.Validator;
 import org.springframework.web.client.RestClient;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -50,11 +52,9 @@ public class ConsultaService {
 
     public ConsultaDto save(@Valid ConsultaCreateDto dto) {
         verificacaoDto(dto);
-
-
-        Consulta consultaSalva = consultaRepository.save(builderConsulta(dto));
-        Usuario medicoEncontrado = usuarioRepository.findById(dto.medicoId()).orElseThrow(MedicoInvalidosException::new);
-        Usuario pascienteEncontrado = usuarioRepository.findById(dto.pacienteId()).orElseThrow(PacienteInvalidosException::new);
+        Usuario medicoEncontrado = usuarioRepository.findByIdAndTipo(dto.medicoId(),TipoUsuario.MEDICO ).orElseThrow(MedicoInvalidosException::new);
+        Usuario pascienteEncontrado = usuarioRepository.findByIdAndTipo(dto.pacienteId(), TipoUsuario.PACIENTE).orElseThrow(PacienteInvalidosException::new);
+        Consulta consultaSalva = consultaRepository.save(builderConsulta(dto, medicoEncontrado , pascienteEncontrado));
 
         notificarService.newNotitification(new NotificarCommand(
                 pascienteEncontrado.getNome(),
@@ -102,14 +102,12 @@ public class ConsultaService {
         }
     }
 
-    private Consulta builderConsulta(@Valid ConsultaCreateDto dto) {
-        Usuario medicoEncontrado = usuarioRepository.findById(dto.medicoId()).orElseThrow(MedicoInvalidosException::new);
-        Usuario pascienteEncontrado = usuarioRepository.findById(dto.pacienteId()).orElseThrow(PacienteInvalidosException::new);
+    private Consulta builderConsulta(@Valid ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
         return new Consulta(
                 medicoEncontrado,
                 pascienteEncontrado,
                 Especialidade.valueOf(dto.especialidade()),
-                LocalDateTime.parse(dto.dataHora()),
+                LocalDateTime.parse(dto.dataHora(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
                 dto.observacoes()
         );
     }
