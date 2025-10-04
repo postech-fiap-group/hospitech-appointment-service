@@ -4,11 +4,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "8080:8080"
+      - "8084:8084"
     depends_on:
       mysql:
         condition: service_healthy
     environment:
+      SPRING_PORT: 8084
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_URL_FLYWAY: jdbc:mysql://mysql:3306/hospitech
       SPRING_DATASOURCE_USERNAME: user
