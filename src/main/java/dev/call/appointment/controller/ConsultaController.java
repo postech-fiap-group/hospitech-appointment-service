@@ -32,7 +32,7 @@ public class ConsultaController {
         return ResponseEntity.status(HttpStatus.OK).body(consultaService.getById(id));
     }
 
-    @GetMapping("/new")
+    @PostMapping("/new")
     public ResponseEntity<ConsultaDto> save(@Valid @RequestBody ConsultaCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(consultaService.save(dto));

@@ -74,8 +74,8 @@ public class ConsultaService {
     private void builderAtualizaConsulta(Consulta consultaEncontrada, ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
         consultaEncontrada.setMedicoId(medicoEncontrado);
         consultaEncontrada.setPacienteId(pascienteEncontrado);
-        consultaEncontrada.setEspecialidade(Especialidade.valueOf(dto.especialidade()));
-        consultaEncontrada.setDataHoraConsulta(LocalDateTime.parse(dto.dataHora()));
+        consultaEncontrada.setEspecialidade(dto.especialidade());
+        consultaEncontrada.setDataHoraConsulta(dto.dataHora());
         consultaEncontrada.setObservacoes(dto.observacoes());
     }
 
@@ -93,8 +93,8 @@ public class ConsultaService {
         return new Consulta(
                 medicoEncontrado,
                 pascienteEncontrado,
-                Especialidade.valueOf(dto.especialidade()),
-                LocalDateTime.parse(dto.dataHora(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")),
+                dto.especialidade(),
+                dto.dataHora(),
                 dto.observacoes()
         );
     }
