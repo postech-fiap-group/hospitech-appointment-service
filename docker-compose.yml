@@ -11,7 +11,7 @@ services:
     environment:
       SPRING_PORT: 8084
       # Datasource
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql_app:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
 
@@ -21,7 +21,7 @@ services:
 
       # Flyway:
       SPRING_FLYWAY_ENABLED: "true"
-      SPRING_FLYWAY_URL: jdbc:mysql://mysql:3306/hospitech
+      SPRING_FLYWAY_URL: jdbc:mysql://mysql_app:3306/hospitech
       SPRING_FLYWAY_USER: user
       SPRING_FLYWAY_PASSWORD: password
 
@@ -34,7 +34,7 @@ services:
 
   mysql:
     image: mysql:8.4.0
-    container_name: mysql-app
+    container_name: mysql_app
     environment:
       MYSQL_DATABASE: hospitech
       MYSQL_ROOT_PASSWORD: root
