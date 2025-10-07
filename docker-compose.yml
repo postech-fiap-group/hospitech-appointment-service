@@ -10,12 +10,29 @@ services:
         condition: service_healthy
     environment:
       SPRING_PORT: 8084
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true
-      SPRING_DATASOURCE_URL_FLYWAY: jdbc:mysql://mysql:3306/hospitech
+      # Datasource
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/hospitech?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
       SPRING_DATASOURCE_USERNAME: user
       SPRING_DATASOURCE_PASSWORD: password
+
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_SHOW_SQL: "false"
+
+      # Flyway:
+      SPRING_FLYWAY_ENABLED: "true"
+      SPRING_FLYWAY_URL: jdbc:mysql://mysql:3306/hospitech
+      SPRING_FLYWAY_USER: user
+      SPRING_FLYWAY_PASSWORD: password
+
+      # GraphQL
+      SPRING_GRAPHQL_PATH: /graphql
+      SPRING_GRAPHQL_GRAPHIQL_ENABLED: "true"      # abre /graphiql
+      SPRING_GRAPHQL_GRAPHIQL_PATH: /graphiql
+
     networks:
       - app-network
+
   mysql:
     image: mysql:8.4.0
     container_name: mysql

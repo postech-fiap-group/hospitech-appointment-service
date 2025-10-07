@@ -1,0 +1,15 @@
+enum Especialidade {
+    CARDIOLOGIA
+    PEDIATRIA
+    ORTOPEDIA
+    DERMATOLOGIA
+}
+
+type Consulta {
+    id: ID!
+    pacienteId: ID!        # expõe só o ID do relacionamento
+    medicoId: ID!
+    especialidade: Especialidade!
+    dataHoraConsulta: DateTime!
+    observacoes: String
+}

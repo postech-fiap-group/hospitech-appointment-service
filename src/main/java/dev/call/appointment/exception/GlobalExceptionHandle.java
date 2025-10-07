@@ -16,6 +16,12 @@ public class GlobalExceptionHandle extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
     }
 
+    @ExceptionHandler(UsuarioEmailExistenteException.class)
+    public ResponseEntity<ErrorMessage> handlerEmailExistenteException(UsuarioEmailExistenteException exception) {
+        ErrorMessage threatResponse = new ErrorMessage(exception.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(threatResponse);
+    }
+
     @ExceptionHandler(ConsultaCamposInvalidosException.class)
     public ResponseEntity<ErrorMessage> handleCamposConsultaInvalidosException(ConsultaCamposInvalidosException exception) {
         ErrorMessage threatResponse = new ErrorMessage(exception.getMessage());

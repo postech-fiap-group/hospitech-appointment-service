@@ -5,6 +5,7 @@ import dev.call.appointment.domain.usuario.dto.UsuarioCreateDto;
 import dev.call.appointment.domain.usuario.dto.UsuarioDetailsDto;
 import dev.call.appointment.domain.usuario.dto.UsuarioLoginDto;
 import dev.call.appointment.exception.UsuarioCamposInvalidosException;
+import dev.call.appointment.exception.UsuarioEmailExistenteException;
 import dev.call.appointment.infra.security.TokenService;
 import dev.call.appointment.repository.UsuarioRepository;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
@@ -43,9 +44,15 @@ public class UsuarioService {
         verificacaoDto(dto);
 
         String passEnconded = passwordEncoder.encode(dto.senha());
-        Usuario newUsuario = new Usuario(dto, passEnconded);
-        repository.save(newUsuario);
 
+        repository.findByEmail(dto.email())
+                .ifPresent(usuario -> {
+                    throw new UsuarioEmailExistenteException();
+                });
+
+        Usuario newUsuario = new Usuario(dto, passEnconded);
+
+        repository.save(newUsuario);
         return new UsuarioDetailsDto(newUsuario);
     }
 

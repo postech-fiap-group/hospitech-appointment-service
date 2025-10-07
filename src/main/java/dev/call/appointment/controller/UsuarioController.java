@@ -27,15 +27,19 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.OK).body(usuarioService.getAll());
     }
 
-    @PostMapping
+    @PostMapping("/new")
     public ResponseEntity<UsuarioDetailsDto> save(@Valid @RequestBody UsuarioCreateDto dto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(usuarioService.save(dto));
     }
 
-    @PostMapping("login")
+    @PostMapping("/login")
     public ResponseEntity<TokenJwtDto> login(@Valid @RequestBody UsuarioLoginDto dto) {
         return ResponseEntity.status(HttpStatus.OK)
                 .body(new TokenJwtDto(usuarioService.login(dto)));
     }
+
+//    @PutMapping
+
+//    @DeleteMapping
 }

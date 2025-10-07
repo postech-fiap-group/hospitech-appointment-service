@@ -1,0 +1,11 @@
+scalar DateTime
+
+type Query {
+    # Busca 1 item
+    consulta(id: ID!): Consulta
+
+    # Lista com filtros opcionais:
+    # - pacienteId: filtra por paciente
+    # - futuras: se true, considera dataHoraConsulta > agora
+    consultas(pacienteId: ID, futuras: Boolean = false): [Consulta!]!
+}

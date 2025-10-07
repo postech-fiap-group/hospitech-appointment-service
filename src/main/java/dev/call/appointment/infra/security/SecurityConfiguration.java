@@ -30,11 +30,11 @@ public class SecurityConfiguration {
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(req -> {
                     // Rotas públicas
-                    req.requestMatchers(HttpMethod.POST, "/usuario/login", "/usuario").permitAll();
+                    req.requestMatchers(HttpMethod.POST, "/usuario/login", "/usuario/new").permitAll();
                     req.requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll();
 
                     // Rotas de médico
-                    req.requestMatchers("/consulta/*/details", "/consulta/*/edit", "/consulta/*/delete")
+                    req.requestMatchers( "/consulta/", "/consulta/*/details", "/consulta/*/edit", "/consulta/*/delete")
                             .hasAuthority("MEDICO");
 
                     // Rotas de enfermeiro
@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                             .hasAuthority("ENFERMEIRO");
 
                     // Rotas de paciente
-                    req.requestMatchers("/consulta")
+                    req.requestMatchers("/consulta/*/details")
                             .hasAuthority("PACIENTE");
 
                     // Qualquer outra rota precisa de login
