@@ -1,3 +1,10 @@
+scalar DateTime
+
+type Query {
+    # Retorna todas as consultas
+    consultas: [Consulta!]!
+}
+
 enum Especialidade {
     CARDIOLOGIA
     PEDIATRIA
@@ -7,7 +14,7 @@ enum Especialidade {
 
 type Consulta {
     id: ID!
-    pacienteId: ID!        # expõe só o ID do relacionamento
+    pacienteId: ID!
     medicoId: ID!
     especialidade: Especialidade!
     dataHoraConsulta: DateTime!

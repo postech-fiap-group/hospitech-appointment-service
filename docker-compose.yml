@@ -28,14 +28,13 @@ services:
       # GraphQL
       SPRING_GRAPHQL_PATH: /graphql
       SPRING_GRAPHQL_GRAPHIQL_ENABLED: "true"      # abre /graphiql
-      SPRING_GRAPHQL_GRAPHIQL_PATH: /graphiql
 
     networks:
       - app-network
 
   mysql:
     image: mysql:8.4.0
-    container_name: mysql
+    container_name: mysql-app
     environment:
       MYSQL_DATABASE: hospitech
       MYSQL_ROOT_PASSWORD: root

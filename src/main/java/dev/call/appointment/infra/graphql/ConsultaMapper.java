@@ -1,17 +1,18 @@
 package dev.call.appointment.infra.graphql;
 
 import dev.call.appointment.domain.consulta.Consulta;
+import java.time.ZoneOffset;
 
 public class ConsultaMapper {
-    public static GraphQLConsultaDto toDTO(Consulta c) {
+
+    public static GraphQLConsultaDto toDTO(Consulta consulta) {
         return new GraphQLConsultaDto(
-                c.getId(),
-                c.getPacienteId() != null ? c.getPacienteId().getId() : null,
-                c.getMedicoId() != null ? c.getMedicoId().getId() : null,
-                c.getEspecialidade(),
-                c.getDataHoraConsulta(),
-                c.getObservacoes()
+                consulta.getId(),
+                consulta.getPacienteId().getId(),
+                consulta.getMedicoId().getId(),
+                consulta.getEspecialidade(),
+                consulta.getDataHoraConsulta().atOffset(ZoneOffset.UTC),
+                consulta.getObservacoes()
         );
     }
 }
-

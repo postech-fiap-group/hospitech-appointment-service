@@ -21,32 +21,11 @@ public class ConsultaGraphQLController {
     }
 
     @QueryMapping
-    public GraphQLConsultaDto consulta(@Argument Long id) {
-        return consultaRepository.findById(id)
+    public List<GraphQLConsultaDto> consultas() {
+        return consultaRepository.findAll()
+                .stream()
                 .map(ConsultaMapper::toDTO)
-                .orElse(null); // GraphQL retornará null se não achar
-    }
-
-    @QueryMapping
-    public List<GraphQLConsultaDto> consultas(@Argument Long pacienteId,
-                                              @Argument Boolean futuras) {
-        boolean apenasFuturas = Boolean.TRUE.equals(futuras);
-        LocalDateTime agora = LocalDateTime.now();
-
-        List<Consulta> resultados;
-
-        if (pacienteId != null && apenasFuturas) {
-            resultados = consultaRepository
-                    .findByPacienteId_IdAndDataHoraConsultaAfter(pacienteId, agora);
-        } else if (pacienteId != null) {
-            resultados = consultaRepository.findByPacienteId_Id(pacienteId);
-        } else if (apenasFuturas) {
-            resultados = consultaRepository.findByDataHoraConsultaAfter(agora);
-        } else {
-            resultados = consultaRepository.findAll();
-        }
-
-        return resultados.stream().map(ConsultaMapper::toDTO).toList();
+                .toList();
     }
 }
 
