@@ -42,7 +42,7 @@ public class SecurityConfiguration {
                             .hasAuthority("ENFERMEIRO");
 
                     // Rotas de paciente
-                    req.requestMatchers("/consulta/*/details")
+                    req.requestMatchers("/consulta/{id}/details")
                             .hasAuthority("PACIENTE");
 
                     // Qualquer outra rota precisa de login

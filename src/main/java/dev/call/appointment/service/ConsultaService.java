@@ -48,9 +48,13 @@ public class ConsultaService {
         verificacaoDto(dto);
         Usuario medicoEncontrado = usuarioRepository.findByIdAndTipo(dto.medicoId(), TipoUsuario.MEDICO).orElseThrow(MedicoInvalidosException::new);
         Usuario pascienteEncontrado = usuarioRepository.findByIdAndTipo(dto.pacienteId(), TipoUsuario.PACIENTE).orElseThrow(PacienteInvalidosException::new);
-        Consulta consultaSalva = consultaRepository.save(builderNovaConsulta(dto, medicoEncontrado, pascienteEncontrado));
-        sendNotification(consultaSalva, medicoEncontrado, pascienteEncontrado);
-        return new ConsultaDto(consultaSalva);
+
+        var consulta = new Consulta();
+        consulta.salvar(dto, medicoEncontrado, pascienteEncontrado);
+        var salva = consultaRepository.save(consulta);
+
+        sendNotification(salva, medicoEncontrado, pascienteEncontrado);
+        return new ConsultaDto(salva);
     }
 
     public ConsultaDto getById(Long id) {

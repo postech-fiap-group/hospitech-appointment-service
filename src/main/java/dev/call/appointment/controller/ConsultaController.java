@@ -28,7 +28,7 @@ public class ConsultaController {
     }
 
     @GetMapping("/{id}/details")
-    public ResponseEntity<ConsultaDto> findById(@PathVariable Long id) {
+    public ResponseEntity<ConsultaDto> findById(@PathVariable("id") Long id) {
         return ResponseEntity.status(HttpStatus.OK).body(consultaService.getById(id));
     }
 

@@ -1,5 +1,6 @@
 package dev.call.appointment.domain.consulta;
 
+import dev.call.appointment.domain.consulta.dto.ConsultaCreateDto;
 import dev.call.appointment.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
@@ -83,6 +84,14 @@ public class Consulta {
 
     public void setObservacoes(String observacoes) {
         this.observacoes = observacoes;
+    }
+
+    public void salvar(ConsultaCreateDto dto, Usuario medicoEncontrado, Usuario pascienteEncontrado) {
+        this.pacienteId = pascienteEncontrado;
+        this.medicoId = medicoEncontrado;
+        this.dataHoraConsulta = dto.dataHora();
+        this.observacoes = dto.observacoes();
+        this.especialidade = dto.especialidade();
     }
 }
 
